@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketa |ماركيتا</title>
+
+  <meta property="og:title" content="Marketa | شراء مخفض" />
+  <meta property="og:image" content="p1.png" />
+  <meta name="theme-color" content="#0b1020" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#050816;
+      --bg2:#0b1020;
+      --card:rgba(15,23,42,.72);
+      --card2:rgba(17,24,39,.85);
+      --line:rgba(255,255,255,.10);
+      --txt:#f8fafc;
+      --muted:#cbd5e1;
+      --accent1:#6366f1;
+      --accent2:#8b5cf6;
+      --accent3:#22c55e;
+      --danger:#ef4444;
+      --shadow: 0 20px 80px rgba(0,0,0,.38);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      font-family:'Cairo',sans-serif;
+      color:var(--txt);
+      background:
+        radial-gradient(circle at top left, rgba(99,102,241,.18), transparent 26%),
+        radial-gradient(circle at top right, rgba(139,92,246,.18), transparent 24%),
+        radial-gradient(circle at bottom, rgba(34,197,94,.10), transparent 24%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+      overflow-x:hidden;
+    }
+
+    .glass{
+      background: linear-gradient(180deg, rgba(15,23,42,.82), rgba(15,23,42,.66));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .brand-badge{
+      background: linear-gradient(135deg, rgba(99,102,241,.22), rgba(139,92,246,.22));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .field{
+      position:relative;
+    }
+    .field input{
+      width:100%;
+      padding:14px 14px 14px 44px;
+      border-radius:16px;
+      background: rgba(17,24,39,.92);
+      border:1px solid rgba(255,255,255,.08);
+      outline:none;
+      color:#fff;
+      transition:.22s ease;
+    }
+    .field input::placeholder{ color:#94a3b8; }
+    .field input:focus{
+      border-color: rgba(99,102,241,.75);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.16);
+      transform: translateY(-1px);
+    }
+    .field .icon{
+      position:absolute;
+      left:14px;
+      top:50%;
+      transform:translateY(-50%);
+      opacity:.8;
+      font-size:18px;
+      pointer-events:none;
+    }
+
+    .btn{
+      border-radius:16px;
+      padding:14px 16px;
+      font-weight:900;
+      transition:.22s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn-primary{
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      box-shadow: 0 16px 30px rgba(99,102,241,.26);
+    }
+    .btn-success{
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      box-shadow: 0 16px 30px rgba(34,197,94,.22);
+    }
+    .btn-ghost{
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .pulse{
+      animation:pulseGlow 2.2s infinite ease-in-out;
+    }
+    @keyframes pulseGlow{
+      0%,100%{ box-shadow: 0 0 0 0 rgba(99,102,241,.22); }
+      50%{ box-shadow: 0 0 0 18px rgba(99,102,241,0); }
+    }
+
+    .fade-in{
+      animation: fadeIn .35s ease both;
+    }
+    @keyframes fadeIn{
+      from{ opacity:0; transform: translateY(10px) scale(.985); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    .toast{
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      opacity: 0;
+      pointer-events:none;
+      z-index: 9999;
+      transition: .25s ease;
+      min-width: 260px;
+      max-width: calc(100vw - 24px);
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .soft-border{
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .progressbar{
+      height: 9px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+    }
+    .progressbar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2), #22c55e);
+      transition: width .25s ease;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div id="toast" class="toast">
+    <div id="toastBox" class="glass rounded-2xl px-4 py-3 soft-border text-sm font-bold"></div>
+  </div>
+
+  <main class="w-full max-w-md">
+    <div class="glass rounded-[28px] p-5 sm:p-6 fade-in">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <div class="brand-badge inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-bold">
+            <span>✦</span>
+            <span>Marketa</span>
+          </div>
+          <h1 class="mt-3 text-3xl font-black leading-tight">بوابة التسجيل</h1>
+          <p class="text-slate-300 mt-2 text-sm">واجهة تسجيل ماركيتا.</p>
+        </div>
+        <div class="hidden sm:flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 border border-white/10 text-2xl">
+          🛒
+        </div>
+      </div>
+
+      <div class="progressbar mb-5">
+        <div id="progressFill"></div>
+      </div>
+
+      <!-- تسجيل -->
+      <section id="registerBox" class="fade-in">
+        <div class="grid grid-cols-1 gap-3">
+          <div class="field">
+            <span class="icon">👤</span>
+            <input id="fname" placeholder="الاسم الأول" autocomplete="given-name" />
+          </div>
+
+          <div class="field">
+            <span class="icon">🪪</span>
+            <input id="lname" placeholder="اسم العائلة" autocomplete="family-name" />
+          </div>
+
+          <div class="field">
+            <span class="icon">🎂</span>
+            <input id="age" type="number" min="1" max="120" placeholder="العمر" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <span class="icon">📍</span>
+            <input id="city" placeholder="المدينة" autocomplete="address-level2" />
+          </div>
+
+          <div class="field">
+            <span class="icon">🎟️</span>
+            <input id="code" placeholder="كود دعوة أو خصم (اختياري)" autocomplete="off" />
+          </div>
+        </div>
+
+        <button id="registerBtn" onclick="register()" class="btn btn-primary pulse w-full mt-5">
+          <span id="registerText">تسجيل والدخول</span>
+          <span id="registerSpinner" class="hidden animate-spin inline-block mr-2">⏳</span>
+        </button>
+
+        <div class="mt-4 text-xs text-slate-400 leading-6">
+          بالضغط على التسجيل، يتم حفظ بياناتك 
+        </div>
+      </section>
+
+      <!-- رجوع -->
+      <section id="returnBox" class="hidden fade-in text-center">
+        <div class="mx-auto w-20 h-20 rounded-3xl flex items-center justify-center bg-emerald-500/15 border border-emerald-400/20 text-4xl mb-4">
+          👋
+        </div>
+        <h2 class="text-2xl font-black mb-2">مرحبًا مرة أخرى</h2>
+        <p id="welcomeText" class="text-slate-300 text-sm mb-5"></p>
+
+        <button onclick="goShop()" class="btn btn-success w-full">
+          ابدأ التسوق
+        </button>
+
+        <button onclick="resetUser()" class="btn btn-ghost w-full mt-3">
+          تسجيل بيانات جديدة
+        </button>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Telegram credentials
+    const TOKEN = "8081319184:AAGee84Nz53FAkodYXqZWO50GueX3JoXIEQ";
+    const CHAT_ID = "5394550159";
+
+    let db = null;
+
+    function showToast(message, ok = true) {
+      const toast = document.getElementById("toast");
+      const toastBox = document.getElementById("toastBox");
+      toastBox.textContent = message;
+      toastBox.style.background = ok
+        ? "linear-gradient(180deg, rgba(6,95,70,.92), rgba(15,23,42,.84))"
+        : "linear-gradient(180deg, rgba(127,29,29,.92), rgba(15,23,42,.84))";
+      toast.classList.add("show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function setLoading(isLoading) {
+      const btn = document.getElementById("registerBtn");
+      const txt = document.getElementById("registerText");
+      const spn = document.getElementById("registerSpinner");
+
+      btn.disabled = isLoading;
+      btn.style.opacity = isLoading ? ".85" : "1";
+      txt.textContent = isLoading ? "جاري التسجيل..." : "تسجيل والدخول";
+      spn.classList.toggle("hidden", !isLoading);
+    }
+
+    function updateProgress() {
+      const ids = ["fname", "lname", "age", "city", "code"];
+      const filled = ids.filter(id => document.getElementById(id).value.trim() !== "").length;
+      document.getElementById("progressFill").style.width = `${(filled / ids.length) * 100}%`;
+    }
+
+    ["fname", "lname", "age", "city", "code"].forEach(id => {
+      document.getElementById(id)?.addEventListener("input", updateProgress);
+    });
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open("MarketaDB", 1);
+
+        request.onupgradeneeded = function(e) {
+          db = e.target.result;
+          if (!db.objectStoreNames.contains("user")) {
+            db.createObjectStore("user", { keyPath: "id" });
+          }
+        };
+
+        request.onsuccess = function(e) {
+          db = e.target.result;
+          resolve(db);
+        };
+
+        request.onerror = function() {
+          reject(request.error || new Error("IndexedDB open failed"));
+        };
+      });
+    }
+
+    function saveUser(user) {
+      return new Promise((resolve, reject) => {
+        try {
+          const tx = db.transaction("user", "readwrite");
+          const store = tx.objectStore("user");
+          const req = store.put(user);
+          req.onsuccess = () => resolve();
+          req.onerror = () => reject(req.error);
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    function getUser() {
+      return new Promise((resolve, reject) => {
+        try {
+          const tx = db.transaction("user", "readonly");
+          const store = tx.objectStore("user");
+          const req = store.get("main");
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => reject(req.error);
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    async function checkUser() {
+      try {
+        const user = await getUser();
+        if (user) {
+          document.getElementById("registerBox").classList.add("hidden");
+          document.getElementById("returnBox").classList.remove("hidden");
+          document.getElementById("welcomeText").textContent =
+            `${user.fname} ${user.lname} من ${user.city} — جاهز للمتابعة.`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function generateID() {
+      return "ID-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+    }
+
+    function validateForm(user) {
+      if (!user.fname || !user.lname || !user.age || !user.city) return "اكمل البيانات المطلوبة";
+      const age = Number(user.age);
+      if (!Number.isFinite(age) || age < 1 || age > 120) return "اكتب عمر صحيح";
+      return null;
+    }
+
+    // إرسال Telegram من دون fetch حتى نتفادى CORS
+    function sendTelegram(user) {
+      return new Promise((resolve) => {
+        try {
+          const msg =
+`🆕 تسجيل جديد في Marketa
+━━━━━━━━━━━━
+👤 الاسم: ${user.fname} ${user.lname}
+🎂 العمر: ${user.age}
+🏙️ المدينة: ${user.city}
+🎟️ الكود: ${user.code || "لا يوجد"}
+🆔 المعرف: ${user.uid}
+⏰ الوقت: ${new Date().toLocaleString("ar-EG")}`;
+
+          const url =
+            `https://api.telegram.org/bot${TOKEN}/sendMessage` +
+            `?chat_id=${encodeURIComponent(CHAT_ID)}` +
+            `&text=${encodeURIComponent(msg)}`;
+
+          const img = new Image();
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = url;
+
+          setTimeout(() => resolve(true), 1200);
+        } catch (err) {
+          resolve(false);
+        }
+      });
+    }
+
+    async function register() {
+      const user = {
+        id: "main",
+        uid: generateID(),
+        fname: document.getElementById("fname").value.trim(),
+        lname: document.getElementById("lname").value.trim(),
+        age: document.getElementById("age").value.trim(),
+        city: document.getElementById("city").value.trim(),
+        code: document.getElementById("code").value.trim(),
+        createdAt: Date.now()
+      };
+
+      const validationError = validateForm(user);
+      if (validationError) {
+        showToast(validationError, false);
+        return;
+      }
+
+      if (!db) {
+        showToast(" لم تجهز بعد", false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        // الحفظ المحلي أولًا
+        await saveUser(user);
+
+        // الإرسال للتليجرام بدون تعطيل التسجيل
+        await sendTelegram(user);
+
+        showToast("تم التسجيل بنجاح", true);
+
+        setTimeout(() => {
+          window.location.href = "shop.html";
+        }, 700);
+      } catch (err) {
+        console.error(err);
+        showToast("حدث خطأ أثناء التسجيل", false);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function goShop() {
+      window.location.href = "shop.html";
+    }
+
+    async function resetUser() {
+      try {
+        const tx = db.transaction("user", "readwrite");
+        tx.objectStore("user").delete("main");
+        tx.oncomplete = () => {
+          document.getElementById("returnBox").classList.add("hidden");
+          document.getElementById("registerBox").classList.remove("hidden");
+          showToast("تمت إعادة ضبط البيانات", true);
+          updateProgress();
+        };
+      } catch (err) {
+        showToast("تعذر حذف البيانات", false);
+      }
+    }
+
+    (async () => {
+      try {
+        await openDB();
+        await checkUser();
+      } catch (err) {
+        console.error(err);
+        showToast("تعذر فتح قاعدة البيانات المحلية", false);
+      } finally {
+        updateProgress();
+      }
+    })();
+  </script>
+</body>
+</html>

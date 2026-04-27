@@ -156,14 +156,51 @@
             box-shadow: 0 24px 70px rgba(0,0,0,.32), var(--neon-glow);
         }
 
-        .product-image {
-            aspect-ratio: 4 / 3;
+        /* تنسيقات شريط تمرير الوسائط (الصور والفيديوهات) */
+        .media-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
             width: 100%;
+        }
+        .media-slider::-webkit-scrollbar {
+            display: none;
+        }
+        .media-slide {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            position: relative;
+            aspect-ratio: 4 / 3;
+            background: #000;
+        }
+        .product-media {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             transition: transform .55s ease;
         }
-        .product-card:hover .product-image {
+        /* تكبير الصورة فقط (تجنب تكبير الفيديو لتجنب مشاكل الأزرار) */
+        .product-card:hover img.product-media {
             transform: scale(1.06);
+        }
+        
+        .swipe-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .badge {
@@ -487,49 +524,16 @@
 
     const productsList = [
         {
-            id: "EG050401",
-            name: "طقم محولات لقم شنيور للفك والربط",
-            price: 150,
-            oldPrice: 195,
-            image: "p1.png",
-            description: "طقم احترافي عالي الجودة يناسب جميع الأعمال.",
-            category: "أدوات",
-            coupons: [
-                { code: "SAVE10", type: "amount", value: 10, },
-                { code: "VIP15", type: "percent", value: 15, }
-            ]
-        },
-        {
-            id: "EG050402",
-            name: "ساعة ذكية رياضية ضد الماء",
-            price: 350,
-            oldPrice: 500,
-            image: "https://via.placeholder.com/800x600.png?text=Smart+Watch",
-            description: "تدعم قياس النبض، واستقبال الإشعارات.",
-            category: "إلكترونيات",
-            coupons: [
-                { code: "WATCH20", type: "amount", value: 20, label: "خصم 20 ج.م" },
-                { code: "HEALTH30", type: "percent", value: 30, label: "خصم 30%" }
-            ]
-        },
-        {
-            id: "EG050403",
-            name: "منظم مكتب خشبي فاخر",
-            price: 220,
-            oldPrice: 280,
-            image: "https://via.placeholder.com/800x600.png?text=Desk+Organizer",
-            description: "ينظم أدواتك بشكل أنيق وعملي على المكتب.",
-            category: "مكتب",
-            coupons: [
-                { code: "DESK25", type: "amount", value: 25, label: "خصم 25 ج.م" }
-            ]
-        },
-        {
-            id: "EG050404",
-            name: "سماعة بلوتوث مدمجة",
-            price: 410,
-            oldPrice: 560,
-            image: "https://via.placeholder.com/800x600.png?text=Bluetooth+Speaker",
+            id: "EG010102HX0300",
+            name: "Airpods pro 2 sim original Black",
+            price: 660,
+            oldPrice: 799,
+            // تم التحديث هنا لدعم مصفوفة من الميديا (صور وفيديوهات)
+            media: [
+                { type: 'image', image: 'p1.png' },
+                { type: 'image', url: 'https://via.placeholder.com/800x600/3b82f6/fff.png?text=Bluetooth+Speaker+2' },
+                { type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4' } // مثال لفيديو
+            ],
             description: "صوت قوي وبطارية طويلة وتشغيل سريع.",
             category: "صوتيات",
             coupons: [
@@ -689,11 +693,45 @@
 
         items.forEach(p => {
             const couponPreview = p.coupons.slice(0, 3).map(c => `<span class="coupon-pill">${c.code} · ${c.label}</span>`).join('');
+            
+            // بناء سلايدر الصور والفيديوهات
+            let mediaHtml = '<div class="media-slider">';
+            let hasMultipleMedia = p.media && p.media.length > 1;
+
+            if (p.media && p.media.length > 0) {
+                p.media.forEach(m => {
+                    if (m.type === 'video') {
+                        mediaHtml += `
+                            <div class="media-slide">
+                                <video controls class="product-media" controlsList="nodownload">
+                                    <source src="${m.url}" type="video/mp4">
+                                </video>
+                            </div>`;
+                    } else {
+                        mediaHtml += `
+                            <div class="media-slide">
+                                <img src="${m.url}" alt="${p.name}" class="product-media" onerror="this.src='https://via.placeholder.com/800x600.png?text=Marketa'">
+                            </div>`;
+                    }
+                });
+            } else if (p.image) {
+                // دعم رجعي في حال تم استخدام image فقط
+                mediaHtml += `
+                    <div class="media-slide">
+                        <img src="${p.image}" alt="${p.name}" class="product-media" onerror="this.src='https://via.placeholder.com/800x600.png?text=Marketa'">
+                    </div>`;
+            }
+            mediaHtml += '</div>';
+
+            // تلميح السحب يظهر فقط إذا كان هناك أكثر من ملف ميديا
+            let swipeHint = hasMultipleMedia ? `<div class="swipe-hint">↔ اسحب للمزيد</div>` : '';
+
             grid.innerHTML += `
                 <article class="product-card group">
                     <div class="relative overflow-hidden">
-                        <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='https://via.placeholder.com/800x600.png?text=Marketa'">
-                        <div class="absolute top-4 right-4 flex flex-col gap-2">
+                        ${mediaHtml}
+                        ${swipeHint}
+                        <div class="absolute top-4 right-4 flex flex-col gap-2 pointer-events-none">
                             <span class="badge bg-black/30 text-white backdrop-blur-md">تخفيض 🔥</span>
                             <span class="badge bg-black/30 text-white backdrop-blur-md">${p.category}</span>
                         </div>
@@ -902,7 +940,7 @@
                 refreshCouponSummary();
                 toast('تم إرسال الطلب بنجاح.', 'success');
             } else {
-                toast('تعذر إرسال الطلب  وـ .', 'error');
+                toast('تعذر إرسال الطلب.', 'error');
             }
         } catch (err) {
             toast('حدثت مشكلة أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.', 'error');
@@ -923,4 +961,4 @@
     };
 </script>
 </body>
-</html>b
+</html>

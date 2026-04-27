@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="neon">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,17 +36,17 @@
             --shadow: 0 20px 60px rgba(15,23,42,.08);
         }
 
-        [data-theme="dark"] {
-            --bg-color: #111827;
-            --text-color: #f3f4f6;
-            --card-bg: rgba(31, 41, 55, 0.82);
-            --panel-bg: rgba(17, 24, 39, 0.92);
-            --primary: #3b82f6;
-            --primary-2: #22c55e;
-            --accent: #8b5cf6;
-            --neon-glow: none;
-            --border-color: #374151;
-            --shadow: 0 20px 60px rgba(0,0,0,.28);
+        [data-theme="golden"] {
+            --bg-color: #fffdf5;
+            --text-color: #4a3f15;
+            --card-bg: rgba(255, 252, 240, 0.85);
+            --panel-bg: rgba(255, 252, 240, 0.94);
+            --primary: #d4af37;
+            --primary-2: #ffd700;
+            --accent: #b8860b;
+            --neon-glow: 0 0 10px rgba(212,175,55,.25), 0 0 24px rgba(255,215,0,.15);
+            --border-color: #e6c86a;
+            --shadow: 0 20px 60px rgba(184,134,11,.12);
         }
 
         * { box-sizing: border-box; }
@@ -365,9 +365,9 @@
 
                 <div class="flex items-center gap-3">
                     <select id="themeSwitcher" onchange="changeTheme(this.value)" class="custom-select text-sm font-bold min-w-[170px]">
-                        <option value="neon">مضئ </option>
-                        <option value="dark">داكن</option>
                         <option value="light">فاتح</option>
+                        <option value="neon">مضئ </option>
+                        <option value="golden">ذهبي</option>
                     </select>
                 </div>
             </div>
@@ -528,7 +528,7 @@
             name: "Airpods pro 2 sim original Black",
             price: 660,
             oldPrice: 799,
-            // تم التحديث هنا لدعم مصفوفة من الميديا (صور وفيديوهات)
+            hasDiscount: true, // إضافة هذه الخاصية ليظهر وسم "تخفيض 🔥" على كارت المنتج
             media: [
                 { type: 'image', url: 'p1.png' },
                 { type: 'image', url: 'p2.png' },
@@ -692,8 +692,6 @@
         }
 
         items.forEach(p => {
-            const couponPreview = p.coupons.slice(0, 3).map(c => `<span class="coupon-pill">${c.code} · ${c.label}</span>`).join('');
-            
             // بناء سلايدر الصور والفيديوهات
             let mediaHtml = '<div class="media-slider">';
             let hasMultipleMedia = p.media && p.media.length > 1;
@@ -726,14 +724,22 @@
             // تلميح السحب يظهر فقط إذا كان هناك أكثر من ملف ميديا
             let swipeHint = hasMultipleMedia ? `<div class="swipe-hint">↔ اسحب للمزيد</div>` : '';
 
+            // بناء الشارات (تخفيض والفئة)
+            let badgesHtml = '';
+            if (p.hasDiscount) {
+                badgesHtml += `<span class="badge bg-black/30 text-white backdrop-blur-md">تخفيض 🔥</span>`;
+            }
+            if (p.category) {
+                badgesHtml += `<span class="badge bg-black/30 text-white backdrop-blur-md">${p.category}</span>`;
+            }
+
             grid.innerHTML += `
                 <article class="product-card group">
                     <div class="relative overflow-hidden">
                         ${mediaHtml}
                         ${swipeHint}
                         <div class="absolute top-4 right-4 flex flex-col gap-2 pointer-events-none">
-                            <span class="badge bg-black/30 text-white backdrop-blur-md">تخفيض 🔥</span>
-                            <span class="badge bg-black/30 text-white backdrop-blur-md">${p.category}</span>
+                            ${badgesHtml}
                         </div>
                     </div>
                     <div class="p-6">
@@ -746,11 +752,6 @@
                                 <div class="text-sm font-bold" style="color: var(--primary);">ج.م</div>
                             </div>
                             <div class="text-sm old-price">${p.oldPrice} ج.م</div>
-                        </div>
-
-                        <div class="mb-4">
-                            ${couponPreview}
-                            ${p.coupons.length > 3 ? `<span class="coupon-pill">+${p.coupons.length - 3} أكواد أخرى</span>` : ''}
                         </div>
 
                         <button onclick='openModal(${JSON.stringify(p.id)}, ${JSON.stringify(p.price)}, ${JSON.stringify(p.name)}, ${JSON.stringify(p.category)})'
@@ -843,7 +844,7 @@
         if (!raw.trim() || !calc.matched.length) {
             box.innerHTML = `
                 <div class="font-bold mb-2">المنتج: ${selectedProduct.name}</div>
-                <div>السعر بعد الخصم للقطعة: <b>${money(calc.totalAfter)}</b></div>
+                <div>السعر للقطعة: <b>${money(calc.totalAfter)}</b></div>
             `;
             return;
         }
@@ -957,7 +958,7 @@
         renderProducts();
         generateBackground();
         refreshCouponSummary();
-        document.getElementById('themeSwitcher').value = document.documentElement.getAttribute('data-theme') || 'neon';
+        document.getElementById('themeSwitcher').value = document.documentElement.getAttribute('data-theme') || 'light';
     };
 </script>
 </body>
